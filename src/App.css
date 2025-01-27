@@ -1,0 +1,91 @@
+/* Reset some default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f4f7; /* Light blue background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Container for centering form */
+.container {
+  background-color: #fff; /* White background for the form */
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Lighter shadow for better contrast */
+  width: 100%;
+  max-width: 500px;
+  border-left: 5px solid #00bfae; /* Colorful left border */
+}
+
+/* Heading Styles */
+.heading {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #ff6f61; /* Coral color for heading */
+  margin-bottom: 25px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+
+/* Form Elements Styling */
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Input field styles */
+.input-field {
+  padding: 12px;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background-color: #fafafa;
+}
+
+.input-field:focus {
+  border-color: #ff6f61; /* Border turns coral on focus */
+  box-shadow: 0 0 8px rgba(255, 111, 97, 0.4); /* Highlight with a glow effect */
+}
+
+/* Submit Button Styles */
+.submit-btn {
+  padding: 12px;
+  font-size: 1.1rem;
+  color: white;
+  background-color: #ff6f61; /* Vibrant coral background */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-btn:hover {
+  background-color: #e65850; /* Darken the button on hover */
+  transform: scale(1.05); /* Slight grow on hover */
+}
+
+.submit-btn:active {
+  background-color: #e14542; /* Active state color */
+}
+
+/* Adding some space between buttons and inputs */
+.submit-btn {
+  margin-top: 20px;
+}
+
+/* Enhancing overall aesthetics with shadow and border radius */
+.container {
+  max-width: 500px;
+  width: 100%;
+}
