@@ -1,38 +1,30 @@
-import  { useState } from 'react'; 
-import axios from 'axios';
-
+// App.tsx
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Login from './Login'; // Import HostDashboard component
+import Guest from './Guest'; // Import Guest component
+import HostDashboard from './HostDashboard';
 function App() {
-  const [guestName, setGuestName] = useState('');
-  const [guestEmail, setGuestEmail] = useState('');
-  const [hostName, setHostName] = useState('');
-  const [appointmentTime, setAppointmentTime] = useState('');
-
-  const handleBookAppointment = async () => {
-    try {
-      await axios.post('http://localhost:5000/api/appointments', {
-        guestName,
-        guestEmail,
-        hostName,
-        appointmentTime
-      });
-      alert('Appointment booked successfully!');
-    } catch (error) {
-      console.error(error);
-      alert('Error booking appointment');
-    }
-  };
-
   return (
-    <div className="container">
-      <h1 className="heading">Book Appointment</h1>
-      <form className="appointment-form" onSubmit={(e) => { e.preventDefault(); handleBookAppointment(); }}>
-        <input className="input-field" type="text" placeholder="Guest Name" value={guestName} onChange={(e) => setGuestName(e.target.value)} />
-        <input className="input-field" type="email" placeholder="Guest Email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} />
-        <input className="input-field" type="text" placeholder="Host Name" value={hostName} onChange={(e) => setHostName(e.target.value)} />
-        <input className="input-field" type="datetime-local" value={appointmentTime} onChange={(e) => setAppointmentTime(e.target.value)} />
-        <button className="submit-btn" type="submit">Book Appointment</button>
-      </form>
-    </div>
+    <Router>
+      <div className="container">
+        <h1 className="heading">Appointment System</h1>
+
+        {/* Navigation Links */}
+        <nav>
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/login">Host Dashboard</Link></li>
+          </ul>
+        </nav>
+
+        {/* Routing */}
+        <Routes>
+          <Route path="/" element={<Guest />} /> {/* Guest component */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/host-dashboard" element={<HostDashboard />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

@@ -1,5 +1,5 @@
-import  { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import axios, { AxiosError } from 'axios';
 
 interface Appointment {
   _id: string;
@@ -10,34 +10,81 @@ interface Appointment {
 
 function HostDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
+  // Function to fetch appointments from the API
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get<Appointment[]>('http://localhost:5000/api/appointments');
-      setAppointments(response.data);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token is missing from localStorage.');
+      }
+
+      const response = await axios.get<{ appointments: Appointment[] }>(
+        'http://localhost:4444/api/appointments',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // Ensure the appointments data is set properly
+      setAppointments(response.data.appointments);
+      setError(null); // Clear any previous error
     } catch (error) {
-      console.error(error);
+      handleError(error);
     }
   };
 
+  // Function to handle errors
+  const handleError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      setError(error.response?.data?.message || error.message);
+    } else if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError('An unknown error occurred.');
+    }
+  };
+
+  // Handle accepting an appointment
   const handleAccept = async (id: string) => {
     try {
-      await axios.put(`http://localhost:5000/api/appointments/${id}/accept`);
-      fetchAppointments(); // Refresh appointment list
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token is missing from localStorage.');
+      }
+
+      await axios.put(
+        `http://localhost:4444/api/appointments/${id}/accept`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      fetchAppointments(); // Refresh appointment list after accepting
     } catch (error) {
-      console.error(error);
+      handleError(error);
     }
   };
 
+  // Handle canceling an appointment
   const handleCancel = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:5000/api/appointments/${id}`);
-      fetchAppointments(); // Refresh appointment list
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token is missing from localStorage.');
+      }
+
+      await axios.delete(`http://localhost:4444/api/appointments/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchAppointments(); // Refresh appointment list after canceling
     } catch (error) {
-      console.error(error);
+      handleError(error);
     }
   };
 
+  // Fetch appointments when the component mounts
   useEffect(() => {
     fetchAppointments();
   }, []);
@@ -45,18 +92,35 @@ function HostDashboard() {
   return (
     <div>
       <h1>Host Dashboard</h1>
-      {appointments.map(appointment => (
-        <div key={appointment._id}>
-          <h3>{appointment.guestName} - {new Date(appointment.appointmentTime).toLocaleString()}</h3>
-          <p>Status: {appointment.status}</p>
-          {appointment.status === 'pending' && (
-            <div>
-              <button onClick={() => handleAccept(appointment._id)}>Accept</button>
-              <button onClick={() => handleCancel(appointment._id)}>Cancel</button>
-            </div>
-          )}
-        </div>
-      ))}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      {appointments.length > 0 ? (
+        appointments.map((appointment) => (
+          <div
+            key={appointment._id}
+            style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}
+          >
+            <h3>
+              {appointment.guestName} -{' '}
+              {new Date(appointment.appointmentTime).toLocaleString()}
+            </h3>
+            <p>
+              Status: <strong>{appointment.status}</strong>
+            </p>
+            {appointment.status === 'pending' && (
+              <div>
+                <button onClick={() => handleAccept(appointment._id)} style={{ marginRight: '10px' }}>
+                  Accept
+                </button>
+                <button onClick={() => handleCancel(appointment._id)}>
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        ))
+      ) : (
+        <p>No appointments found.</p>
+      )}
     </div>
   );
 }
