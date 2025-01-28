@@ -12,6 +12,10 @@ interface Appointment {
 function HostDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [rescheduleData, setRescheduleData] = useState<{
+    appointmentId: string;
+    newAppointmentTime: string;
+  } | null>(null);
 
   // Function to fetch appointments from the API
   const fetchAppointments = async () => {
@@ -28,7 +32,6 @@ function HostDashboard() {
         }
       );
 
-      // Ensure the appointments data is set properly
       setAppointments(response.data.appointments);
       setError(null); // Clear any previous error
     } catch (error) {
@@ -85,43 +88,107 @@ function HostDashboard() {
     }
   };
 
+  // Handle rescheduling an appointment
+  const handleReschedule = async (id: string) => {
+    const newAppointmentTime = rescheduleData?.newAppointmentTime || '';
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token is missing from localStorage.');
+      }
+
+      await axios.put(
+        `http://localhost:4444/api/hosts/appointments/${id}/reschedule`,
+        { appointmentTime: newAppointmentTime },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      fetchAppointments(); // Refresh appointment list after rescheduling
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  // Function to check if appointment can be canceled or rescheduled (24 hours before the appointment time)
+  const canModifyAppointment = (appointmentTime: string): boolean => {
+    const appointmentDate = new Date(appointmentTime);
+    const now = new Date();
+    const timeDifference = appointmentDate.getTime() - now.getTime();
+
+    // 24 hours in milliseconds
+    return timeDifference > 24 * 60 * 60 * 1000; 
+  };
+
   // Fetch appointments when the component mounts
   useEffect(() => {
     fetchAppointments();
   }, []);
 
   return (
-    <div >
-      <h1>Host Dashboard</h1>
+    <div>
+      <h1 className='text-center text-xl'>Host Dashboard</h1>
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
       {appointments.length > 0 ? (
         appointments.map((appointment) => (
           <div
             key={appointment._id}
-            style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}
+            style={{
+              marginBottom: '20px',
+              padding: '10px',
+              border: '1px solid #ccc',
+            }}
           >
             <h3>
               {appointment.guestName} -{' '}
               {new Date(appointment.appointmentTime).toLocaleString()}
             </h3>
             <h3>
-              
-            <div className='text-[.8rem]'> Host: {appointment.hostName}</div>
+              <div className='text-[.8rem]'> Host: {appointment.hostName}</div>
             </h3>
-            <p>
-              Status: <strong>{appointment.status}</strong>
-            </p>
-            {appointment.status === 'pending' && (
+            <p>Status: <strong>{appointment.status}</strong></p>
+            {appointment.status === 'pending' && canModifyAppointment(appointment.appointmentTime) && (
               <div className='flex justify-center'>
-                <button onClick={() => handleAccept(appointment._id)}
-                 style={{ marginRight: '10px',padding: '.18rem' }}
-                 className='bg-green-400 rounded-md'>
+                <button
+                  onClick={() => handleAccept(appointment._id)}
+                  style={{ marginRight: '10px', padding: '.18rem' }}
+                  className='bg-green-400 rounded-md'
+                >
                   Accept
                 </button>
-                <button onClick={() => handleCancel(appointment._id)}
-                 style={{ marginRight: '10px',padding: '.18rem' }} 
-                 className='bg-red-500 text-white rounded-md'>
+                <button
+                  onClick={() => handleCancel(appointment._id)}
+                  style={{ marginRight: '10px', padding: '.18rem' }}
+                  className='bg-red-500 text-white rounded-md'
+                >
                   Cancel
+                </button>
+                <button
+                  onClick={() => setRescheduleData({ appointmentId: appointment._id, newAppointmentTime: '' })}
+                  style={{ marginRight: '10px', padding: '.18rem' }}
+                  className='bg-blue-500 text-white rounded-md'
+                >
+                  Reschedule
+                </button>
+              </div>
+            )}
+
+            {rescheduleData?.appointmentId === appointment._id && (
+              <div className="mt-3">
+                <input
+                  type="datetime-local"
+                  value={rescheduleData.newAppointmentTime}
+                  onChange={(e) =>
+                    setRescheduleData({ ...rescheduleData, newAppointmentTime: e.target.value })
+                  }
+                  className="px-2 py-1 border rounded-md"
+                />
+                <button
+                  onClick={() => handleReschedule(appointment._id)}
+                  style={{ marginLeft: '10px', padding: '.18rem' }}
+                  className='bg-blue-500 text-white rounded-md'
+                >
+                  Confirm Reschedule
                 </button>
               </div>
             )}

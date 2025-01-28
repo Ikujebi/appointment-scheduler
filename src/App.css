@@ -20,8 +20,8 @@ body {
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Lighter shadow for better contrast */
-  width: 100%;
-  max-width: 500px;
+  
+ 
   border-left: 5px solid #00bfae; /* Colorful left border */
 }
 
@@ -84,11 +84,6 @@ body {
   margin-top: 20px;
 }
 
-/* Enhancing overall aesthetics with shadow and border radius */
-.container {
-  max-width: 500px;
-  width: 100%;
-}
 
 
 .lgn-input{
