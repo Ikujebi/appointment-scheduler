@@ -89,26 +89,32 @@ function HostDashboard() {
   };
 
   // Handle rescheduling an appointment
-  const handleReschedule = async (id: string) => {
-    const newAppointmentTime = rescheduleData?.newAppointmentTime || '';
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token is missing from localStorage.');
-      }
-
-      await axios.put(
-        `http://localhost:4444/api/hosts/appointments/${id}/reschedule`,
-        { appointmentTime: newAppointmentTime },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      fetchAppointments(); // Refresh appointment list after rescheduling
-    } catch (error) {
-      handleError(error);
+  // Handle rescheduling an appointment
+const handleReschedule = async (id: string) => {
+  const newAppointmentTime = rescheduleData?.newAppointmentTime || '';
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Token is missing from localStorage.');
     }
-  };
+
+    await axios.put(
+      `http://localhost:4444/api/hosts/appointments/${id}/reschedule`,
+      { appointmentTime: newAppointmentTime },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    // Refresh appointment list after rescheduling
+    fetchAppointments();
+
+    // Clear the reschedule data to hide the reschedule input and button
+    setRescheduleData(null);
+  } catch (error) {
+    handleError(error);
+  }
+};
 
   // Function to check if appointment can be canceled or rescheduled (24 hours before the appointment time)
   const canModifyAppointment = (appointmentTime: string): boolean => {
