@@ -9,7 +9,10 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:4444/api/login', { email, password });
+      console.log('Email:', email);
+    console.log('Password:', password);
+
+      const response = await axios.post('http://localhost:4444/api/auth/login', { email, password });
 
       // Store token in localStorage
       localStorage.setItem('token', response.data.token);

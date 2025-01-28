@@ -7,10 +7,10 @@ function App() {
   return (
     <Router>
       <div className="container">
-        <h1 className="heading">Appointment System</h1>
+        <h1 className="heading" style={{marginTop: '20rem'}}>Appointment System</h1>
 
         {/* Navigation Links */}
-        <nav>
+        <nav >
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/login">Host Dashboard</Link></li>

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 interface Appointment {
   _id: string;
   guestName: string;
   appointmentTime: string;
+  hostName: string;
   status: 'pending' | 'accepted' | 'canceled';
 }
 
@@ -21,7 +22,7 @@ function HostDashboard() {
       }
 
       const response = await axios.get<{ appointments: Appointment[] }>(
-        'http://localhost:4444/api/appointments',
+        'http://localhost:4444/api/hosts/appointments',
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -55,7 +56,7 @@ function HostDashboard() {
       }
 
       await axios.put(
-        `http://localhost:4444/api/appointments/${id}/accept`,
+        `http://localhost:4444/api/hosts/appointments/${id}/accept`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -75,7 +76,7 @@ function HostDashboard() {
         throw new Error('Token is missing from localStorage.');
       }
 
-      await axios.delete(`http://localhost:4444/api/appointments/${id}`, {
+      await axios.delete(`http://localhost:4444/api/hosts/appointments/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchAppointments(); // Refresh appointment list after canceling
@@ -90,7 +91,7 @@ function HostDashboard() {
   }, []);
 
   return (
-    <div>
+    <div >
       <h1>Host Dashboard</h1>
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
       {appointments.length > 0 ? (
@@ -103,15 +104,23 @@ function HostDashboard() {
               {appointment.guestName} -{' '}
               {new Date(appointment.appointmentTime).toLocaleString()}
             </h3>
+            <h3>
+              
+            <div className='text-[.8rem]'> Host: {appointment.hostName}</div>
+            </h3>
             <p>
               Status: <strong>{appointment.status}</strong>
             </p>
             {appointment.status === 'pending' && (
-              <div>
-                <button onClick={() => handleAccept(appointment._id)} style={{ marginRight: '10px' }}>
+              <div className='flex justify-center'>
+                <button onClick={() => handleAccept(appointment._id)}
+                 style={{ marginRight: '10px',padding: '.18rem' }}
+                 className='bg-green-400 rounded-md'>
                   Accept
                 </button>
-                <button onClick={() => handleCancel(appointment._id)}>
+                <button onClick={() => handleCancel(appointment._id)}
+                 style={{ marginRight: '10px',padding: '.18rem' }} 
+                 className='bg-red-500 text-white rounded-md'>
                   Cancel
                 </button>
               </div>

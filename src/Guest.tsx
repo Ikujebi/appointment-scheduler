@@ -10,7 +10,7 @@ function Guest() {
 
   const handleBookAppointment = async () => {
     try {
-      await axios.post('http://localhost:4444/api/appointments', {
+      await axios.post('http://localhost:4444/api/guests/appointments', {
         guestName,
         guestEmail,
         hostName,
@@ -25,6 +25,10 @@ function Guest() {
       });
       
       alert('Appointment booked successfully!');
+      setGuestName('');
+      setGuestEmail('');
+      setHostName('');
+      setAppointmentTime('');
     } catch (error) {
       console.error(error);
       alert('Error booking appointment');
