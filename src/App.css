@@ -17,7 +17,8 @@ body {
 /* Container for centering form */
 .container {
   background-color: #fff; /* White background for the form */
-  padding: 40px;
+  
+  padding-inline: 30px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Lighter shadow for better contrast */
   

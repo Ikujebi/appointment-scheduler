@@ -4,6 +4,7 @@ import Login from './Login'; // Import HostDashboard component
 import Guest from './Guest'; // Import Guest component
 import HostDashboard from './HostDashboard';
 import {useState, useEffect} from 'react'
+import logo from './assets/img/uniliverlogo.png'
 function App() {
 
   const [isHostDashboard, setIsHostDashboard] = useState(false);
@@ -24,8 +25,9 @@ function App() {
 
   return (
     <Router>
-      <div  style={isHostDashboard ? { marginTop: '42rem' } : {}} className="container md:w-[35rem] lg:w-[35rem] xl:w-[50rem] 2xl:w-[50rem]">
-        <h1 className="heading" >Appointment System</h1>
+      <div  style={isHostDashboard ? { marginTop: '65rem' } : {}} className="container md:w-[35rem] lg:w-[35rem] xl:w-[50rem] 2xl:w-[50rem]">
+      <img src={logo} alt="" className='w-[6rem]' />
+        <h1 className="heading" >Unilever Appointment System</h1>
 
         {/* Navigation Links */}
         <nav >
