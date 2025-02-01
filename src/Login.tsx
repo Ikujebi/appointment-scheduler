@@ -27,7 +27,7 @@ function LoginPage() {
   };
 
   return (
-    <div>
+    <div className='mb'>
       <h1>Host Login</h1>
       <div>
 <div className=' bg-blue-100 rounded-md mt'>
@@ -50,7 +50,7 @@ function LoginPage() {
       </div>
       </div>
       <div className='flex justify-center mt bg-blue-300 '>
-      <button onClick={handleLogin} className='lgn-input font-bold'>Login</button>
+      <button onClick={handleLogin} className='lgn-input font-bold w-[100%] '>Login</button>
       </div>
     </div>
   );

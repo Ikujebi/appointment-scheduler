@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Fragment } from 'react'
 import { message } from 'antd' // Import Ant Design message
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 
 interface Appointment {
   _id: string
@@ -15,6 +18,7 @@ function HostDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [filterDate, setFilterDate] = useState('');
   const [filteredData, setFilteredData] = useState<Appointment[]>([])
   const [rescheduleData, setRescheduleData] = useState<{
     appointmentId: string
@@ -122,16 +126,35 @@ function HostDashboard() {
 
   useEffect(() => {
     setFilteredData(
-      appointments.filter((appointment) =>
-        appointment.guestName.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    )
-  }, [searchTerm, appointments])
+      appointments.filter((appointment) => {
+        const matchesGuest = appointment.guestName.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesDate = filterDate
+          ? new Date(appointment.appointmentTime).toISOString().split('T')[0] === filterDate
+          : true;
+        return matchesGuest && matchesDate;
+      })
+    );
+  }, [searchTerm, filterDate, appointments]);
+  
+  const handleDownloadPDF = () => {
+    const input = document.body; // Capture the entire page
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      pdf.save("dashboard.pdf");
+    });
+  };
+  
 
   return (
     <div className="flex justify-start">
-      <div className="shadow-xl flex bg-white rounded-lg w-full md:w-[47.5rem] px-[2%] flex-col">
+      <div className="shadow-xl flex bg-white rounded-lg w-full  px-[2%] flex-col">
         <h2 className="font-semibold text-lg">Guests Log</h2>
+        <div className='flex gap-1'>
         <input
           type="text"
           placeholder="Search"
@@ -139,6 +162,17 @@ function HostDashboard() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <input
+          type="text"
+          placeholder="filter by date"
+          className="pl-8 pr-2 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 w-[9rem]"
+          value={filterDate}
+          onChange={(e) => setFilterDate(e.target.value)}
+        />
+        <button 
+        className='bg-green-200 w-[5rem] rounded-md' 
+        onClick={handleDownloadPDF}>download pdf</button>
+        </div>
         <table className="w-full text-left border-collapse border border-gray-300 mt-2">
           <thead>
             <tr className="border-b border-gray-300">
@@ -152,31 +186,31 @@ function HostDashboard() {
             {filteredData.map((appointment) => (
               <Fragment key={appointment._id}>
                 <tr className="border-b border-gray-300">
-                  <td className="p-2 border border-gray-300">
+                  <td className="p-2 border border-gray-300 text-center">
                     {appointment.guestName}
                   </td>
-                  <td className="p-2 border border-gray-300">
+                  <td className="p-2  flex justify-center">
                     {appointment.hostName}
                   </td>
-                  <td className="p-2 border border-gray-300">
+                  <td className="p-2 border border-gray-300 text-center">
                     {new Date(appointment.appointmentTime).toLocaleString()}
                   </td>
-                  <td className="p-2 border border-gray-300">
+                  <td className="p-2 border border-gray-300 flex justify-around ">
                     <button
-                      className="bg-green-400 text-white rounded-md px-2 py-1"
+                      className="bg-green-400 text-white rounded-md lgn-input "
                       onClick={() => handleAccept(appointment._id)}
                     >
                       Accept
                     </button>
                     <button
-                      className="bg-red-400 text-white rounded-md px-2 py-1 ml-2"
+                      className="bg-red-400 text-white rounded-md lgn-input"
                       onClick={() => handleCancel(appointment._id)}
                       disabled={!canModifyAppointment(appointment.appointmentTime)}
                     >
                       Cancel
                     </button>
                     <button
-                      className="bg-blue-400 text-white rounded-md px-2 py-1 ml-2"
+                      className="bg-blue-400 text-white rounded-md lgn-inpu"
                       onClick={() =>
                         setRescheduleData({
                           appointmentId: appointment._id,

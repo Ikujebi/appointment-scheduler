@@ -25,7 +25,7 @@ function App() {
 
   return (
     <Router>
-      <div  style={isHostDashboard ? { marginTop: '65rem' } : {}} className="container md:w-[35rem] lg:w-[35rem] xl:w-[50rem] 2xl:w-[50rem]">
+      <div  style={isHostDashboard ? { marginTop: '6rem',width: '50rem' } : {}} className="container ">
       <img src={logo} alt="" className='w-[6rem]' />
         <h1 className="heading" >Unilever Appointment System</h1>
 

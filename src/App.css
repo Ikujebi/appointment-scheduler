@@ -18,7 +18,7 @@ body {
 .container {
   background-color: #fff; /* White background for the form */
   
-  padding-inline: 30px;
+  padding-inline: 20px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Lighter shadow for better contrast */
   
@@ -89,10 +89,15 @@ body {
 
 .lgn-input{
   padding: 5px;
-  
+  width: 100%;
+  height: 100%;
 }
 
 .mt{
   margin-top: 1rem;
+}
+
+.mb{
+  padding-bottom: 2rem;
 }
 
